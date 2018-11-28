@@ -1,0 +1,112 @@
+---
+title: "The Test Function"
+author: "Jaidev Kutty"
+date: "11/27/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+
+
+```{r}
+uniscaler<-function(x){
+
+  x<-data.frame(x)
+colnames(x)<-c("Original")
+x<-x %>% mutate(scaled= (Original-min(Original))/(max(Original)-min(Original)))
+y<-x$scaled
+}
+```
+
+
+
+```{r}
+
+rho_gen<-function(y,k,i){
+# k is the lag.
+  # i is the starting index.
+subsetter_1<-seq(from=i,to=length(y),by=k)  
+subsetter_2<-seq(from=i+k, to=length(y),by=k)
+ 
+  
+prathseq <- y[subsetter_1]
+dwiseq <- y[subsetter_2]
+dwiseq[length(dwiseq)+1]<-0
+###########################
+
+# Make sure they are of the same length to make a dataframe
+# difference<-length(prathseq) - length(dwiseq) 
+
+# if(difference>0){
+#   abs_diff = abs(difference)
+#   prathseq <- prathseq[-c(length(prathseq) - abs_diff + 1 : length(prathseq))]
+# }
+# else if(difference < 0){
+#   abs_diff = abs(difference)
+#   dwiseq <- dwiseq[-c(length(dwiseq) - abs_diff + 1 : length(dwiseq))]
+# }
+##########################
+
+dat <- data_frame(prathseq,dwiseq)
+dat<-dat %>% mutate(prod=prathseq*dwiseq)
+M<-floor(((length(y)-i)/k)-1)
+rho_ik<-((sum(dat$prod))/(M+1))-0.25
+sig_ik<-(sqrt((13*M)+7))/(12*(M+1))
+z<-rho_ik/sig_ik
+
+ifelse(2*(1-pnorm(abs(z)))<0.05,yes="There is autocorrelation at this lag",no="There is no autocorrelation at this lag")
+
+}
+```
+
+
+
+
+```{r}
+autocor_checker<-function(x,k,i){
+  rho_gen(uniscaler(x),k,i)  
+}
+
+```
+
+Using the Homework6 Example
+```{r}
+cordat<-arima.sim(model = list(ar=0.98),n=100)
+acf(cordat)
+```
+
+```{r}
+autocor_checker(cordat,k=1,i=3)
+```
+
+
+```{r}
+randbin<-rbinom(n=1001,80,.50)
+acf(randbin)
+autocor_checker(randbin,k=3,i=10)
+```
+```{r}
+randnorm<-rnorm(80,-1,4)
+autocor_checker(randnorm,k=4,i=6)
+```
+
+```{r}
+randexp<-rexp(1000,rate = 4.5)
+autocor_checker(randexp,k=2,i=6)
+```
+
+```{r}
+randt<-rt(1000,350)
+autocor_checker(randt,12,1)
+```
+
+```{r}
+randbeta<-rbeta(1000,4,4)
+autocor_checker(randbeta,k=30,i=1)
+```
+
