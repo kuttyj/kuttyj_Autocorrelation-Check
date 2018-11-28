@@ -96,8 +96,16 @@ autocor_checker(randnorm,k=4,i=6)
 ```
 
 ```{r}
-randexp<-rexp(1000,rate = 4.5)
+randexp <- rexp(1000,rate = 4.5)
+table(randexp)
+
+check_1 <- pexp(randexp,rate=4.5)
+check_2 <- uniscaler(randexp)
+
+checker <- data.frame(check_1,check_2)
+
 autocor_checker(randexp,k=2,i=6)
+autocor_checker(check_1,k=5,i=20)
 ```
 
 ```{r}
