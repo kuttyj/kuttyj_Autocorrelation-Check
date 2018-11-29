@@ -16,10 +16,7 @@ library(tidyverse)
 ```{r}
 uniscaler<-function(x){
 
-  x<-data.frame(x)
-colnames(x)<-c("Original")
-x<-x %>% mutate(scaled= abs(Original-min(Original))/(max(Original)-min(Original)))
-y<-x$scaled
+  x<-ecdf(x)(x)
 }
 ```
 
@@ -59,7 +56,7 @@ rho_ik<-((sum(dat$prod))/(M+1))-0.25
 sig_ik<-(sqrt((13*M)+7))/(12*(M+1))
 z<-rho_ik/sig_ik
 
-ifelse(2*(1-pnorm(abs(z)))<0.05,yes="There is autocorrelation at this lag",no="There is no autocorrelation at this lag")
+ifelse(2*(1-pnorm(abs(z)))<0.05,yes="Doh! No random data",no="I did not identify any dependency for this lag")
 
 }
 ```
@@ -78,19 +75,22 @@ Using the Homework6 Example
 ```{r}
 cordat<-arima.sim(model = list(ar=0.98),n=100)
 acf(cordat)
+hist(ecdf(cordat)(cordat))
+k<- ecdf(cordat)(cordat)
+acf(k)
 ```
 
 ```{r}
 autocor_checker(cordat,k=1,i=3)
-ecdf(cordat)
 ```
 
 
 ```{r}
 randbin<-rbinom(n=1001,80,.45)
-ecdf(randbin)
 acf(randbin)
 autocor_checker(randbin,k=3,i=10)
+
+
 ```
 
 ```{r}
@@ -100,16 +100,15 @@ autocor_checker(randnorm,k=4,i=6)
 
 ```{r}
 randexp <- rexp(1000,rate = 4.5)
-table(randexp)
-
 check_1 <- pexp(randexp,rate=4.5)
 check_2 <- uniscaler(randexp)
 
 checker <- data.frame(check_1,check_2)
 
-autocor_checker(randexp,k=2,i=6)
+autocor_checker(randexp,k=5,i=20)
 autocor_checker(check_1,k=5,i=20)
 ```
+Inversion Method is to be used that is a flaw. That is in case of known distributions.What about distribution is unknown?
 
 ```{r}
 randt<-rt(1000,350)
