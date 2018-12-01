@@ -19,3 +19,5 @@ Title : A naive testing procedure to check for autocorrelation.
 
 The goal of project is to create a function that will check if there is presence of autocorrelation in the data.
 
+Link to my Slides:https://github.com/ST541-Fall2018/kuttyj_Autocorrelation-Check/blob/master/A%20test%20of%20autocorrelation.pdf
+      
