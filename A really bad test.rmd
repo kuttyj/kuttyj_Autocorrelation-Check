@@ -13,42 +13,40 @@ library(tidyverse)
 
 
 
-```{r}
-uniscaler<-function(x){
 
-  x<-ecdf(x)(x)
-}
-```
+
 
 
 
 ```{r}
 
-rho_gen<-function(y,k,i){
-# k is the lag.
+autocor_checker<-function(y,k,i){
+  # y is the vector for which we are keen on checking for randomness.
+  # k is the lag.
   # i is the starting index.
+
+  #The orginal test for checking if the numbers have a similar structure to a Uniform(0,1) distrubtion as that is a method to generate random number generators. And i need to convert
+  uniscaler<-function(y){
+
+  y<-ecdf(y)(y)
+}
+
+#I am subsetting in following way to create the two sequences as described in the test.   
+  
+  
 subsetter_1<-seq(from=i,to=length(y),by=k)  
 subsetter_2<-seq(from=i+k, to=length(y),by=k)
  
-  
+
+#prath is short for Pratham which means First in Sanskrit
+#dwi is short for "Dwitiya" which means Second in Sanskrit
+
 prathseq <- y[subsetter_1]
 dwiseq <- y[subsetter_2]
+
+#I forcefully added 0 to dwiseq, because i wanted to see it in a Dataframe.
+
 dwiseq[length(dwiseq)+1]<-0
-###########################
-
-# Make sure they are of the same length to make a dataframe
-# difference<-length(prathseq) - length(dwiseq) 
-
-# if(difference>0){
-#   abs_diff = abs(difference)
-#   prathseq <- prathseq[-c(length(prathseq) - abs_diff + 1 : length(prathseq))]
-# }
-# else if(difference < 0){
-#   abs_diff = abs(difference)
-#   dwiseq <- dwiseq[-c(length(dwiseq) - abs_diff + 1 : length(dwiseq))]
-# }
-##########################
-
 dat <- data_frame(prathseq,dwiseq)
 dat<-dat %>% mutate(prod=prathseq*dwiseq)
 M<-floor(((length(y)-i)/k)-1)
@@ -64,33 +62,16 @@ ifelse(2*(1-pnorm(abs(z)))<0.05,yes="Doh! No random data",no="I did not identify
 
 
 
-```{r}
-autocor_checker<-function(x,k,i){
-  rho_gen(uniscaler(x),k,i)  
-}
-
-```
-
 Using the Homework6 Example
 ```{r}
 cordat<-arima.sim(model = list(ar=0.98),n=100)
-acf(cordat)
-hist(ecdf(cordat)(cordat))
-k<- ecdf(cordat)(cordat)
-acf(k)
-```
-
-```{r}
 autocor_checker(cordat,k=1,i=3)
 ```
 
 
 ```{r}
 randbin<-rbinom(n=1001,80,.45)
-acf(randbin)
 autocor_checker(randbin,k=3,i=10)
-
-
 ```
 
 ```{r}
@@ -100,15 +81,8 @@ autocor_checker(randnorm,k=4,i=6)
 
 ```{r}
 randexp <- rexp(1000,rate = 4.5)
-check_1 <- pexp(randexp,rate=4.5)
-check_2 <- uniscaler(randexp)
-
-checker <- data.frame(check_1,check_2)
-
 autocor_checker(randexp,k=5,i=20)
-autocor_checker(check_1,k=5,i=20)
 ```
-Inversion Method is to be used that is a flaw. That is in case of known distributions.What about distribution is unknown?
 
 ```{r}
 randt<-rt(1000,350)
