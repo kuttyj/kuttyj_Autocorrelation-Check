@@ -29,7 +29,8 @@ autocor_checker<-function(y,k,i){
   uniscaler<-function(y){
 
   y<-ecdf(y)(y)
-}
+
+  }
 
 #I am subsetting in following way to create the two sequences as described in the test.   
   
@@ -41,22 +42,30 @@ subsetter_2<-seq(from=i+k, to=length(y),by=k)
 #prath is short for Pratham which means First in Sanskrit
 #dwi is short for "Dwitiya" which means Second in Sanskrit
 
-prathseq <- y[subsetter_1]
-dwiseq <- y[subsetter_2]
+prathseq <- uniscaler(y)[subsetter_1]
+dwiseq <- uniscaler(y)[subsetter_2]
 
 #I forcefully added 0 to dwiseq, because i wanted to see it in a Dataframe.
 
 dwiseq[length(dwiseq)+1]<-0
+
 dat <- data_frame(prathseq,dwiseq)
-dat<-dat %>% mutate(prod=prathseq*dwiseq)
-M<-floor(((length(y)-i)/k)-1)
-rho_ik<-((sum(dat$prod))/(M+1))-0.25
-sig_ik<-(sqrt((13*M)+7))/(12*(M+1))
-z<-rho_ik/sig_ik
 
-ifelse(2*(1-pnorm(abs(z)))<0.05,yes="Doh! No random data",no="I did not identify any dependency for this lag")
+dat <- dat %>% mutate(prod=prathseq*dwiseq)
 
+M <- floor(((length(y)-i)/k)-1)
+
+rho_ik <- ((sum(dat$prod))/(M+1))-0.25
+
+sig_ik <- (sqrt((13*M)+7))/(12*(M+1))
+
+z <- rho_ik/sig_ik
+
+test<-ifelse(2*(1-pnorm(abs(z)))<0.05,yes="Doh! No random data",no="I did not identify any dependency for this lag")
+return(list(conclusion = test, p_value = 2*(1-pnorm(abs(z)))))
 }
+
+
 ```
 
 
