@@ -10,7 +10,7 @@ Title : A test for autocorrelation.
 The goal of project is to create a function that will check if there is
 presence of autocorrelation in the data.
 
-“Tidyverse” is the only package that, I have used in making this
+“Tidyverse” is the only package used in making this
 function.
 
 Link to my
