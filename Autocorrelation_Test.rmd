@@ -42,16 +42,16 @@ subsetter_2<-seq(from=i+k, to=length(y),by=k)
 #prath is short for Pratham which means First in Sanskrit
 #dwi is short for "Dwitiya" which means Second in Sanskrit
 
-prathseq <- uniscaler(y)[subsetter_1]
-dwiseq <- uniscaler(y)[subsetter_2]
+seq_1 <- uniscaler(y)[subsetter_1]
+seq_2 <- uniscaler(y)[subsetter_2]
 
-#I forcefully added 0 to dwiseq, because i wanted to see it in a Dataframe.
+#I want both sequences to be of same length so as i can obtian a tidy dataframe.I add element '0' to seq_2 vector.
 
-dwiseq[length(dwiseq)+1]<-0
+seq_2[length(seq_2)+1]<-0
 
-dat <- data_frame(prathseq,dwiseq)
+dat <- data_frame(seq_1,seq_2)
 
-dat <- dat %>% mutate(prod=prathseq*dwiseq)
+dat <- dat %>% mutate(prod=seq_1*seq_2)
 
 M <- floor(((length(y)-i)/k)-1)
 
@@ -61,7 +61,7 @@ sig_ik <- (sqrt((13*M)+7))/(12*(M+1))
 
 z <- rho_ik/sig_ik
 
-test<-ifelse(2*(1-pnorm(abs(z)))<0.05,yes="Doh! No random data",no="I did not identify any dependency for this lag")
+test<-ifelse(2*(1-pnorm(abs(z)))<0.05,yes="There is some dependence at this lag",no="No dependency found for this lag")
 return(list(conclusion = test, p_value = 2*(1-pnorm(abs(z)))))
 }
 
